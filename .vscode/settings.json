@@ -1,0 +1,52 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "172.17.0.3",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "rootpostgres",
+            "username": "postgres",
+            "password": "grilo007",
+            "database": "postgres"
+        },
+        {
+            "previewLimit": 50,
+            "server": "172.17.0.3",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "ordersystem",
+            "database": "ordersystem",
+            "username": "ordersystem",
+            "password": "ordersystem"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "172.17.0.2",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "rootmariadb",
+            "database": "mysql",
+            "username": "root",
+            "password": "grilo007"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "172.17.0.2",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "ordersystemMaria",
+            "database": "ordersystem",
+            "username": "ordersystem",
+            "password": "ordersystem"
+        }
+    ]
+}

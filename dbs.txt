@@ -1,0 +1,39 @@
+docker run --detach --name mariadb --env MARIADB_ROOT_PASSWORD=grilo007  mariadb:latest
+
+create DATABASE ordersystem;
+create user 'ordersystem'@'localhost' identified by 'ordersystem';
+create user 'ordersystem'@'172.17.0.1' identified by 'ordersystem';
+create user 'ordersystem'@'%' identified by 'ordersystem';
+grant all  on  ordersystem.* to 'ordersystem'@'localhost';
+grant all  on  ordersystem.* to 'ordersystem'@'%';
+
+CREATE TABLE orders (
+    id varchar(255) NOT NULL,
+    price float NOT NULL,
+    tax float NOT NULL,
+    final_price float NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+
+
+
+
+docker run --name postgres -e POSTGRES_PASSWORD=grilo007 -d postgres
+
+create DATABASE ordersystem;
+create ROLE ordersystem password 'ordersystem';
+grant all privileges on DATABASE ordersystem to ordersystem;
+alter role ordersystem login;
+
+-- as ordersystem in  DATABASE ordersystem
+create SCHEMA orders;
+CREATE TABLE orders.orders (
+    id varchar(255) NOT NULL,
+    price float NOT NULL,
+    tax float NOT NULL,
+    final_price float NOT NULL,
+    PRIMARY KEY (id)
+);
+
