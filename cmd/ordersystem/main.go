@@ -12,6 +12,8 @@ import (
 	"github.com/antoniofmoliveira/cleanarch/internal/event/handler"
 	"github.com/antoniofmoliveira/cleanarch/internal/infra/web/webserver"
 	"github.com/antoniofmoliveira/cleanarch/internal/inject"
+
+	// "github.com/antoniofmoliveira/cleanarch/internal/inject"
 	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 
 	"github.com/streadway/amqp"
@@ -32,10 +34,14 @@ func main() {
 	}
 	defer db.Close()
 
-	rabbitMQChannel := getRabbitMQChannel()
+	rabbitMQChannel := getRabbitMQChannel(*configs)
 
 	eventDispatcher := events.NewEventDispatcher()
 	eventDispatcher.Register("OrderCreated", &handler.OrderCreatedHandler{
+		RabbitMQChannel: rabbitMQChannel,
+	})
+
+	eventDispatcher.Register("OrderListed", &handler.OrderListedHandler{
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
@@ -44,6 +50,10 @@ func main() {
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := inject.NewWebOrderHandler(db, eventDispatcher)
 	webserver.AddHandler("/order", webOrderHandler.Create)
+
+	webOrderListHandler := inject.NewWebOrderListHandler(db, eventDispatcher)
+	webserver.AddHandler("/orders", webOrderListHandler.List)
+
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
 
@@ -63,8 +73,10 @@ func main() {
 
 }
 
-func getRabbitMQChannel() *amqp.Channel {
-	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+func getRabbitMQChannel(configs configs.Config) *amqp.Channel {
+	addr := fmt.Sprintf("amqp://%s:%s@%s:%s/", configs.AmqpUser, configs.AmqpPassword, configs.AmqpHost, configs.AmqpPort)
+
+	conn, err := amqp.Dial(addr)
 	if err != nil {
 		panic(err)
 	}
@@ -76,9 +88,6 @@ func getRabbitMQChannel() *amqp.Channel {
 }
 
 func initStorage(configs configs.Config) (*sql.DB, error) {
-
-	// [username[:password]@][protocol[(address)]]/dbname[?param1=value1&...&paramN=valueN]
-
 	connString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s",
 		configs.DBUser,
 		configs.DBPassword,
@@ -96,11 +105,5 @@ func initStorage(configs configs.Config) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	// if _, err := db.Exec(
-	// 	"CREATE TABLE IF NOT EXISTS message (value TEXT PRIMARY KEY)"); err != nil {
-	// 	return nil, err
-	// }
-
 	return db, nil
 }
