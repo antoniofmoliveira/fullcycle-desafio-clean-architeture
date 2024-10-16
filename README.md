@@ -18,20 +18,34 @@ Para a criação do banco de dados, utilize o Docker (Dockerfile / docker-compos
 Inclua um README.md com os passos a serem executados no desafio e a porta em que a aplicação deverá responder em cada serviço.
 
 
-foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o package para inject
+foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o package para inject wm virtude de conflito no namespace main
 
+utilizando docker
+- mariadb@latest
+- rabbitmq 4-management-alpine
 
 alterar /internal/entity
-- adicionar listOrders em interface.go
-- implementar listOrders em order.go
-- adicionar teste em order_test.go
+- adicionar listOrders em interface.go ✔
+- implementar listOrders em order.go ✔
+- adicionar teste em order_test.go ✔
 
 alterar /internal/infra/database
-- adicionar consulta ao banco de dados
+- adicionar consulta ao banco de dados ✔
+- criar migrations com sql para criação da tabela ✔
 
 alterar /internal/usecase
-- adicionar list_order.go
-- checar necessidade alterar algo em /pkg/events (em princípio nada)
+- adicionar list_order.go ✔
+- checar necessidade alterar algo em /pkg/events (em princípio nada) ✔
+
+alterar /internal/infra/web
+- criar listorders_handler.go ✔
+- altera wire.go para incluir list orders ✔
+- executa wire ✔
+- migrar wire_gen.go para outro package para evitar problemas de namespace ✔
+- adicionar handler ao webserver em /cmd/ordersystem/main.go ✔
+
+alterar /api
+- adicionar arquivos .http para criar orders e listar orders ✔
 
 alterar /internal/infra/grpc
 - adicionar service e messages to ./protofiles/order.proto
@@ -47,9 +61,3 @@ alterar /internal/infra/graph (seguir https://gqlgen.com/getting-started/)
 - adicionar usecase a resolver.go
 - adicionar query ao graph server em /cmd/ordersystem/main.go
 
-alterar /internal/infra/web
-- criar listorders_handler.go
-- adicionar handler ao webserver em /cmd/ordersystem/main.go
-
-alterar /api
-- adicionar arquivos .http para criar orders e listar orders
