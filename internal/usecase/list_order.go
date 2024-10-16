@@ -39,5 +39,9 @@ func (l *ListOrderUseCase) Execute() ([]OrderOutputDTO, error) {
 			FinalPrice: order.FinalPrice,
 		}
 	}
+
+	l.OrderListed.SetPayload(dto)
+	l.EventDispatcher.Dispatch(l.OrderListed)
+
 	return dto, nil
 }

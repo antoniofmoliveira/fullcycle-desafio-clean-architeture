@@ -4,22 +4,22 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
 	"github.com/antoniofmoliveira/cleanarch/configs"
+	"github.com/antoniofmoliveira/cleanarch/internal/graph"
 	"github.com/antoniofmoliveira/cleanarch/internal/event/handler"
 	"github.com/antoniofmoliveira/cleanarch/internal/infra/web/webserver"
 	"github.com/antoniofmoliveira/cleanarch/internal/inject"
-
-	// "github.com/antoniofmoliveira/cleanarch/internal/inject"
 	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 
-	"github.com/streadway/amqp"
-
-	// _ "github.com/lib/pq"
+	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/streadway/amqp"
 )
 
 func main() {
@@ -34,6 +34,8 @@ func main() {
 	}
 	defer db.Close()
 
+	// RabbitMQ init
+
 	rabbitMQChannel := getRabbitMQChannel(*configs)
 
 	eventDispatcher := events.NewEventDispatcher()
@@ -45,7 +47,9 @@ func main() {
 		RabbitMQChannel: rabbitMQChannel,
 	})
 
-	// createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
+	// RabbitMQ end
+
+	// webserver start
 
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := inject.NewWebOrderHandler(db, eventDispatcher)
@@ -56,6 +60,25 @@ func main() {
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
+
+	// webserver end
+
+	//graphql server start
+
+	createOrderUseCase := inject.NewCreateOrderUseCase(db, eventDispatcher)
+	listOrderUseCase := inject.NewListOrderUseCase(db, eventDispatcher)
+
+	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		CreateOrderUseCase: *createOrderUseCase,
+		ListOrderUseCase:   *listOrderUseCase,
+	}}))
+	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	http.Handle("/query", srv)
+
+	fmt.Println("Starting GraphQL server on port", configs.GraphQLServerPort)
+	http.ListenAndServe(":"+configs.GraphQLServerPort, nil)
+
+	// graphql server end
 
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)

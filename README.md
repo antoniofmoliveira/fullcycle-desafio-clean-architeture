@@ -18,8 +18,6 @@ Para a criação do banco de dados, utilize o Docker (Dockerfile / docker-compos
 Inclua um README.md com os passos a serem executados no desafio e a porta em que a aplicação deverá responder em cada serviço.
 
 
-foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o package para inject wm virtude de conflito no namespace main
-
 utilizando docker
 - mariadb@latest
 - rabbitmq 4-management-alpine
@@ -29,13 +27,16 @@ alterar /internal/entity
 - implementar listOrders em order.go ✔
 - adicionar teste em order_test.go ✔
 
+alterar /internal/usecase
+- adicionar list_order.go ✔
+- checar necessidade alterar algo em /pkg/events (em princípio nada) ✔
+
 alterar /internal/infra/database
 - adicionar consulta ao banco de dados ✔
 - criar migrations com sql para criação da tabela ✔
 
-alterar /internal/usecase
-- adicionar list_order.go ✔
-- checar necessidade alterar algo em /pkg/events (em princípio nada) ✔
+alterar /internal/event
+- adicionar evento e handler para list order ✔
 
 alterar /internal/infra/web
 - criar listorders_handler.go ✔
@@ -43,9 +44,19 @@ alterar /internal/infra/web
 - executa wire ✔
 - migrar wire_gen.go para outro package para evitar problemas de namespace ✔
 - adicionar handler ao webserver em /cmd/ordersystem/main.go ✔
+- foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o package para inject wm virtude de conflito no namespace main
 
 alterar /api
 - adicionar arquivos .http para criar orders e listar orders ✔
+
+alterar /internal/infra/graph (seguir https://gqlgen.com/getting-started/)
+- executar go run github.com/99designs/gqlgen init  ✔
+- alterar schema.graphqls para adicionar query ✔
+- executar go run github.com/99designs/gqlgen generate ✔
+- adicionar resolver a schema.resolvers.go  ✔
+- implementar Orders em resolver.go ✔
+- adicionar query ao graph server em /cmd/ordersystem/main.go ✔
+- mover graph para /internal/ ✔
 
 alterar /internal/infra/grpc
 - adicionar service e messages to ./protofiles/order.proto
@@ -53,11 +64,5 @@ alterar /internal/infra/grpc
 - adicionar list_orders.go em ./service
 - adicionar service ao grpc server em /cmd/ordersystem/main.go
 
-alterar /internal/infra/graph (seguir https://gqlgen.com/getting-started/)
-- executar go run github.com/99designs/gqlgen init
-- copiar generated.go gerado em /graph para /internal/infra/graph (dispatch agora precisa de contexto) 
-- alterar schema.graphqls para adicionar query
-- adicionar resolver a schema.resolvers.go
-- adicionar usecase a resolver.go
-- adicionar query ao graph server em /cmd/ordersystem/main.go
+
 

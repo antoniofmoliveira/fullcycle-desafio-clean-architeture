@@ -24,7 +24,13 @@ var setEventDispatcherDependency = wire.NewSet(
 	events.NewEventDispatcher,
 	event.NewOrderCreated,
 	wire.Bind(new(events.EventInterface), new(*event.OrderCreated)),
+	wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)),
+)
 
+var setOtherEventDispatcherDependency = wire.NewSet(
+	events.NewEventDispatcher,
+	event.NewOrderListed,
+	wire.Bind(new(events.EventInterface), new(*event.OrderListed)),
 	wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)),
 )
 
