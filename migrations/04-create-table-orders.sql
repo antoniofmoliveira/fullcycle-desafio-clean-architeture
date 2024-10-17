@@ -1,3 +1,4 @@
+-- run as ordersystem
 CREATE TABLE orders (
     id varchar(255) NOT NULL,
     price float NOT NULL,

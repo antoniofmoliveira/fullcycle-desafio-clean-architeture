@@ -11,6 +11,7 @@ type WebServer struct {
 	Router        chi.Router
 	Handlers      map[string]http.HandlerFunc
 	WebServerPort string
+	Server        *http.Server
 }
 
 func NewWebServer(serverPort string) *WebServer {
@@ -18,6 +19,7 @@ func NewWebServer(serverPort string) *WebServer {
 		Router:        chi.NewRouter(),
 		Handlers:      make(map[string]http.HandlerFunc),
 		WebServerPort: serverPort,
+		Server:        &http.Server{Addr: serverPort},
 	}
 }
 
@@ -33,5 +35,6 @@ func (s *WebServer) Start() {
 	for path, handler := range s.Handlers {
 		s.Router.Handle(path, handler)
 	}
-	http.ListenAndServe(s.WebServerPort, s.Router)
+	s.Server.Handler = s.Router
+	s.Server.ListenAndServe()
 }

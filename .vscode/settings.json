@@ -47,6 +47,20 @@
             "database": "ordersystem",
             "username": "ordersystem",
             "password": "ordersystem"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "172.18.0.3",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "mariadbca",
+            "database": "ordersystem",
+            "username": "ordersystem",
+            "password": "ordersystem"
         }
     ]
 }

@@ -1,25 +1,32 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/antoniofmoliveira/cleanarch/configs"
-	"github.com/antoniofmoliveira/cleanarch/internal/graph"
-	"github.com/antoniofmoliveira/cleanarch/internal/event/handler"
-	"github.com/antoniofmoliveira/cleanarch/internal/infra/web/webserver"
-	"github.com/antoniofmoliveira/cleanarch/internal/inject"
-	"github.com/antoniofmoliveira/cleanarch/pkg/events"
+	"time"
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/antoniofmoliveira/cleanarch/configs"
+	"github.com/antoniofmoliveira/cleanarch/internal/event/handler"
+	"github.com/antoniofmoliveira/cleanarch/internal/graph"
+	"github.com/antoniofmoliveira/cleanarch/internal/grpc/pb"
+	"github.com/antoniofmoliveira/cleanarch/internal/grpc/service"
+
+	"github.com/antoniofmoliveira/cleanarch/internal/infra/web/webserver"
+	"github.com/antoniofmoliveira/cleanarch/internal/inject"
+	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/streadway/amqp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 func main() {
@@ -63,10 +70,30 @@ func main() {
 
 	// webserver end
 
-	//graphql server start
-
 	createOrderUseCase := inject.NewCreateOrderUseCase(db, eventDispatcher)
 	listOrderUseCase := inject.NewListOrderUseCase(db, eventDispatcher)
+
+	// grpc server start
+
+	grpcServer := grpc.NewServer()
+	createOrderService := service.NewOrderService(*createOrderUseCase)
+	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
+
+	listOrderService := service.NewListOrderService(*listOrderUseCase)
+	pb.RegisterListOrderServiceServer(grpcServer, listOrderService)
+
+	reflection.Register(grpcServer)
+
+	fmt.Println("Starting gRPC server on port", configs.GRPCServerPort)
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", configs.GRPCServerPort))
+	if err != nil {
+		panic(err)
+	}
+	go grpcServer.Serve(lis)
+
+	// grpc server end
+
+	//graphql server start
 
 	srv := graphql_handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		CreateOrderUseCase: *createOrderUseCase,
@@ -85,19 +112,24 @@ func main() {
 
 	<-termChan
 	log.Println("server: shutting down")
-	// ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	// defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
-	// if err := server.Shutdown(ctx); err != nil {
-	// 	log.Fatalf("Could not shutdown the server: %v\n", err)
-	// }
-	fmt.Println("Server stopped")
+	if err := webserver.Server.Shutdown(ctx); err != nil {
+		log.Fatalf("Could not shutdown the webserver: %v\n", err)
+	}
+
+	grpcServer.GracefulStop()
+
+	rabbitMQChannel.Close()
+
+	fmt.Println("WebServer stopped")
 	os.Exit(0)
 
 }
 
 func getRabbitMQChannel(configs configs.Config) *amqp.Channel {
-	addr := fmt.Sprintf("amqp://%s:%s@%s:%s/", configs.AmqpUser, configs.AmqpPassword, configs.AmqpHost, configs.AmqpPort)
+	addr := fmt.Sprintf("amqp://%s:%s@%s", configs.AmqpUser, configs.AmqpPassword, configs.AmqpHost)
 
 	conn, err := amqp.Dial(addr)
 	if err != nil {
