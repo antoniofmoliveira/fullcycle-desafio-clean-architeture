@@ -17,64 +17,119 @@ Para a criação do banco de dados, utilize o Docker (Dockerfile / docker-compos
 
 Inclua um README.md com os passos a serem executados no desafio e a porta em que a aplicação deverá responder em cada serviço.
 
+## Solução
 
-utilizando docker
+### utilizando docker
+
 - mariadb:latest
+
 - rabbitmq:4-management-alpine
 
-alterar /internal/entity
+### alterar /internal/entity
+
 - adicionar listOrders em interface.go ✔
+
 - implementar listOrders em order.go ✔
+
 - adicionar teste em order_test.go ✔
 
-alterar /internal/usecase
+### alterar /internal/usecase
+
 - adicionar list_order.go ✔
+
 - checar necessidade alterar algo em /pkg/events (em princípio nada) ✔
 
-alterar /internal/infra/database
+### alterar /internal/infra/database
+
 - adicionar consulta ao banco de dados ✔
+
 - criar migrations com sql para criação da tabela ✔
 
-alterar /internal/event
+### alterar /internal/event
+
 - adicionar evento e handler para list order ✔
 
-alterar /internal/infra/web
+### alterar /internal/infra/web
+
 - criar listorders_handler.go ✔
+
 - altera wire.go para incluir list orders ✔
+
 - executa wire ✔
+
 - migrar wire_gen.go para outro package para evitar problemas de namespace ✔
+
 - adicionar handler ao webserver em /cmd/ordersystem/main.go ✔
+
 - foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o package para inject wm virtude de conflito no namespace main
 
-alterar /api
+### alterar /api
+
 - adicionar arquivos .http para criar orders e listar orders ✔
 
-alterar /internal/infra/graph (seguir https://gqlgen.com/getting-started/)
+### alterar /internal/infra/graph (seguir https://gqlgen.com/getting-started/)
+
 - executar go run github.com/99designs/gqlgen init  ✔
+
 - alterar schema.graphqls para adicionar query ✔
+
 - executar go run github.com/99designs/gqlgen generate ✔
+
 - adicionar resolver a schema.resolvers.go  ✔
+
 - implementar Orders em resolver.go ✔
+
 - adicionar query ao graph server em /cmd/ordersystem/main.go ✔
+
 - mover graph para /internal/ ✔
 
-alterar /internal/infra/grpc
+### alterar /internal/infra/grpc
+
 - adicionar service e messages to ./protofiles/order.proto ✔
+
 - go get google.golang.org/grpc ✔
+
 - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest ✔
+
 - go install google.golang.org/protobuf/cmd/protoc-gen-go@latest ✔
+
 - usar protoc para gerar arquivos em ./pb  ✔
+
 - protoc --go-grpc_out --go_out=pb --go_opt=paths=source_relative protofiles/order.proto  ✔
+
 - criar ListOrdersService em /service ✔
+
 - adicionar service ao grpc server em /cmd/ordersystem/main.go ✔
+
 - testar:
+
     - grpcurl -plaintext -d '{"id": "1", "price": 100, "tax": 10}' localhost:50051 pb.OrderService/CreateOrder
+
     - grpcurl -plaintext localhost:50051 pb.ListOrderService/ListOrders
 
 
-implementar docker composer
+### implementar docker composer
 
-* executando servidor e log de mensagens
+- docker build --pull --rm -f "Dockerfile" -t cleanarch:latest "."
+
+- criar a network que vai connectar o docker compose
+
+- docker compose -f "docker-compose.yaml" up -d --build 
+
+- atentar para as variáveis de ambiente para rodar local
+
+  - DB_HOST=172.18.0.3 - tem que ser o ip do container
+
+  - AMQP_HOST=localhost
+
+- atentar para as variaveis de ambiente para rodar no docker compose
+
+  - DB_HOST=mariadbca - tem que ser o hostname colocado no service do docker compose
+
+  - AMQP_HOST=rabbitmq - tem que ser o hostname colocado no service do docker compose
+
+
+### executando servidor e log de mensagens
 
 ```bash
 antonio@DG15:~/DEV/go2/clean-arch$ air
@@ -120,7 +175,8 @@ Order created: {1 100 10 110}/Order listed: [{a 100.5 0.5 101} {b 100.5 0.5 101}
 Order listed: [{1 100 10 110} {a 100.5 0.5 101} {b 100.5 0.5 101} {c 100.5 0.5 101}]
 ```
 
-* interação grpc
+### interação grpc
+
 ```bash
 antonio@DG15:~/DEV/go2/clean-arch$ grpcurl -plaintext -d '{"id": "1", "price": 100, "tax": 10}' localhost:50051 pb.OrderService/CreateOrder
 {
@@ -160,13 +216,14 @@ antonio@DG15:~/DEV/go2/clean-arch$ grpcurl -plaintext localhost:50051 pb.ListOrd
 }
 ```
 
-* interação graphql
+### interação graphql
+
 ```graphql
 {orders {
   id,Price, Tax, FinalPrice
 }}
 ```
-* saída graphql
+### saída graphql
 ```json
 {
   "data": {
@@ -200,7 +257,7 @@ antonio@DG15:~/DEV/go2/clean-arch$ grpcurl -plaintext localhost:50051 pb.ListOrd
 }
 ```
 
-* interação api
+### interação api
 
 ```http
 GET http://localhost:8080/orders HTTP/1.1
@@ -208,7 +265,7 @@ Host: localhost:8000
 Content-Type: application/json
 ```
 
-* saída api
+### saída api
 
 ```http
 HTTP/1.1 200 OK
@@ -245,12 +302,3 @@ Connection: close
 ]
 ```
 
-* docker
-- docker build --pull --rm -f "Dockerfile" -t cleanarch:latest "."
-- docker compose -f "docker-compose.yaml" up -d --build 
-- atentar para as variáveis de ambiente para rodar local
-  - DB_HOST=172.18.0.3 - tem que ser o ip do container
-  - AMQP_HOST=localhost
-- atentar para as variaveis de ambiente para rodar no docker compose
-  - DB_HOST=mariadbca - tem que ser o hostname colocado no service do docker compose
-  - AMQP_HOST=rabbitmq - tem que ser o hostname colocado no service do docker compose
