@@ -101,7 +101,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - adicionar service ao grpc server em /cmd/ordersystem/main.go ✔
 
-- testar:
+- testar: ✔
 
     - grpcurl -plaintext -d '{"id": "1", "price": 100, "tax": 10}' localhost:50051 pb.OrderService/CreateOrder
 
@@ -110,19 +110,19 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 ### implementar docker composer
 
-- docker build --pull --rm -f "Dockerfile" -t cleanarch:latest "."
+- docker build --pull --rm -f "Dockerfile" -t cleanarch:latest "." ✔
 
-- criar a network que vai connectar o docker compose
+- criar a network que vai connectar o docker compose ✔
 
-- docker compose -f "docker-compose.yaml" up -d --build 
+- docker compose -f "docker-compose.yaml" up -d --build  ✔
 
-- atentar para as variáveis de ambiente para rodar local
+- atentar para as variáveis de ambiente para rodar local ✔
 
   - DB_HOST=172.18.0.3 - tem que ser o ip do container
 
   - AMQP_HOST=localhost
 
-- atentar para as variaveis de ambiente para rodar no docker compose
+- atentar para as variaveis de ambiente para rodar no docker compose ✔
 
   - DB_HOST=mariadbca - tem que ser o hostname colocado no service do docker compose
 
