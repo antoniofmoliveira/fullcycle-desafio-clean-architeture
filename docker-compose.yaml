@@ -53,6 +53,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
+    command: command
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmqcleanarch

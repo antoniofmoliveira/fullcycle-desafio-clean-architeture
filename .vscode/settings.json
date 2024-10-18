@@ -29,20 +29,6 @@
             "server": "172.17.0.2",
             "port": 3306,
             "driver": "MariaDB",
-            "name": "rootmariadb",
-            "database": "mysql",
-            "username": "root",
-            "password": "grilo007"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
-            "server": "172.17.0.2",
-            "port": 3306,
-            "driver": "MariaDB",
             "name": "ordersystemMaria",
             "database": "ordersystem",
             "username": "ordersystem",
@@ -54,7 +40,21 @@
                 "enableSsl": "Disabled"
             },
             "previewLimit": 50,
-            "server": "172.18.0.3",
+            "server": "172.18.0.2",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "rootmariadb",
+            "database": "mysql",
+            "username": "root",
+            "password": "grilo007"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
             "port": 3306,
             "driver": "MariaDB",
             "name": "mariadbca",
