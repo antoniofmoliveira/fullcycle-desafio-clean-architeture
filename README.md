@@ -128,11 +128,11 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
   - AMQP_HOST=rabbitmq - tem que ser o hostname colocado no service do docker compose
 
-- assim `.env_container` contém as variáveis de ambiente para rodar em container e `.env` contém as nece3ssárias para executar localmente. a linha `COPY .env_container .env` no `dockerfile` copia o `.env_container` para `.env`, automatizando o processoa ao construir o container.
+- assim `.env_container` contém as variáveis de ambiente para rodar em container e `.env` contém as necessárias para executar localmente. a linha `COPY .env_container .env` no `dockerfile` copia o `.env_container` para `.env`, automatizando o processoa ao construir o container.
 
 - **IMPORTANTE**: após a carga do container o rabbitmq demora cerca de 3 segundos para iniciar em minha máquina, impedindo o aplicativo de se conectar ao rabbimq causando panic.
 isso se traduz na necessidade de adicionar no `docker-compose.yml` um healthcheck no service do rabbitmq e uma condition no depends_on do app.
-uma adicional healtcheck foi adicionado ao service do mariadb só por garantia.
+um adicional healthcheck foi adicionado ao service do mariadb só por garantia.
 
 ### executando servidor e log de mensagens
 
