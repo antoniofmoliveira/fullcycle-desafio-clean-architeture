@@ -9,7 +9,7 @@ COPY go.* ./
 RUN go mod download
 
 COPY . .
-COPY .env /app/
+COPY .env_container .env
 
 RUN go build -o main cmd/ordersystem/main.go
 

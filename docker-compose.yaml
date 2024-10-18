@@ -1,39 +1,11 @@
 services:
- 
-  mariadb:
-    image: mariadb:latest
-    container_name: mariadbcleanarch
-    hostname: mariadbca
-    restart: always
-    environment:
-      MARIADB_ROOT_PASSWORD: grilo007
-      MYSQL_DATABASE: ordersystem
-      MYSQL_PASSWORD: ordersystem
-    ports:
-      - 3306:3306
-    # volumes:
-    #   - .mysql/mysql:/var/lib/mysql
-    networks:
-      - cleanarchnet
 
-  rabbitmq:
-    image: rabbitmq:4-management-alpine
-    container_name: rabbitmqcleanarch
-    hostname: rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-      - "15692:15692"
-    environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
-      - RABBITMQ_DEFAULT_VHOST=/
-    networks:
-      - cleanarchnet
   cleanarch:
     depends_on:
-      - mariadb
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
+      mariadb:
+        condition: service_healthy
     build:
       context: .
     container_name: cleanarch
@@ -60,6 +32,46 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadbcleanarch
+    hostname: mariadbca
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: grilo007
+      MYSQL_DATABASE: ordersystem
+      MYSQL_PASSWORD: ordersystem
+    ports:
+      - 3306:3306
+    # volumes:
+    #   - .mysql/mysql:/var/lib/mysql
+    networks:
+      - cleanarchnet
+    healthcheck:
+      test: [ "CMD-SHELL", "service mariadb status" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmqcleanarch
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_VHOST=/
+    networks:
+      - cleanarchnet
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
 networks:
   cleanarchnet:
