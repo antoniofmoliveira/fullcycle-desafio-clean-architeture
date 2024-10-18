@@ -20,7 +20,7 @@ import (
 	"github.com/antoniofmoliveira/cleanarch/internal/grpc/pb"
 	"github.com/antoniofmoliveira/cleanarch/internal/grpc/service"
 
-	"github.com/antoniofmoliveira/cleanarch/internal/infra/web/webserver"
+	"github.com/antoniofmoliveira/cleanarch/internal/web/webserver"
 	"github.com/antoniofmoliveira/cleanarch/internal/inject"
 	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 	_ "github.com/go-sql-driver/mysql"
