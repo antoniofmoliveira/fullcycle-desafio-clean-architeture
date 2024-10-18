@@ -39,7 +39,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - checar necessidade alterar algo em /pkg/events (em princípio nada) ✔
 
-### alterar /internal/infra/database
+### alterar /internal/database
 
 - adicionar consulta ao banco de dados ✔
 
@@ -49,7 +49,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - adicionar evento e handler para list order ✔
 
-### alterar /internal/infra/web
+### alterar /internal/web
 
 - criar listorders_handler.go ✔
 
@@ -67,7 +67,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - adicionar arquivos .http para criar orders e listar orders ✔
 
-### alterar /internal/infra/graph (seguir https://gqlgen.com/getting-started/)
+### alterar /internal/graph (seguir https://gqlgen.com/getting-started/)
 
 - executar go run github.com/99designs/gqlgen init  ✔
 
@@ -83,7 +83,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - mover graph para /internal/ ✔
 
-### alterar /internal/infra/grpc
+### alterar /internal/grpc
 
 - adicionar service e messages to ./protofiles/order.proto ✔
 
@@ -158,10 +158,9 @@ watching internal/grpc
 watching internal/grpc/pb
 watching internal/grpc/protofiles
 watching internal/grpc/service
-watching internal/infra
-watching internal/infra/database
-watching internal/infra/web
-watching internal/infra/web/webserver
+watching internal/database
+watching internal/web
+watching internal/web/webserver
 watching internal/inject
 watching internal/usecase
 watching migrations

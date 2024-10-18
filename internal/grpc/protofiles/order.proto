@@ -1,6 +1,6 @@
 syntax = "proto3";
 package pb;
-option go_package = "internal/infra/grpc/pb";
+option go_package = "internal/grpc/pb";
 
 message CreateOrderRequest {
   string id = 1;
