@@ -55,7 +55,7 @@ services:
       timeout: 3s
       retries: 5
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    image: rabbitmq:4-management-alpine
     container_name: rabbitmqcleanarch
     hostname: rabbitmq
     ports:

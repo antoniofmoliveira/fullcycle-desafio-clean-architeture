@@ -19,7 +19,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 ## Solução
 
-### utilizando docker
+### utilizando containers
 
 - mariadb:latest
 
@@ -29,9 +29,11 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
     - o `docker-compose.yml` sempre tentará rodar o` migrations up` antes de executar o systema. após a primeira execução a linha com `command: sh ...` pode ser excluída ou comentada.
 
-    - o Makefile tem comandos para inicializar o migrations, executar o up e o down, e para ressetar a dirty flag do banco de dados no caso de acontecer interrupção da migração. só tem que atualizar a senha do root para acesso ao banco de dados.
+    - o Makefile tem comandos para inicializar o migrations, executar o up e o down, e para ressetar a dirty flag do banco de dados no caso de acontecer interrupção da migração. só tem que atualizar a senha do root e o database para acesso ao banco de dados.
 
 - rabbitmq:4-management-alpine
+
+    - demora uns 3 segundos para iniciar.  veja detalhes na seção docker abaixo.
 
 ### alterar /internal/entity
 
