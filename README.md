@@ -23,11 +23,13 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - mariadb:latest
 
-    - antes de rodar migrations crie usuario e database para o sistema (veja `sql/create-database-and-user.sql`) e atualize as variáveis em `.env`, `.env_container` e `docker-compose.yml`.
+    - o sistem está utilizando o database `mysql` com user `root` e senha `root`.
+
+    - em `sql/create-database-and-user.sql`  está a sequencia de sql para criar database, user e grant all no database para o user criado. lembre de atualizar as variáveis em `.env`, `.env_container` e `docker-compose.yml`. no `docker-compose.yml` atualize também user e senha na linha `command: sh ...`.
+
+    - o `docker-compose.yml` sempre tentará rodar o` migrations up` antes de executar o systema. após a primeira execução a linha com `command: sh ...` pode ser excluída ou comentada.
 
     - o Makefile tem comandos para inicializar o migrations, executar o up e o down, e para ressetar a dirty flag do banco de dados no caso de acontecer interrupção da migração. só tem que atualizar a senha do root para acesso ao banco de dados.
-
-    - para instalar o migrate: `go install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@latest`
 
 - rabbitmq:4-management-alpine
 

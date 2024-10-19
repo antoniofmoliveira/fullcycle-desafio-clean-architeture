@@ -40,20 +40,6 @@
                 "enableSsl": "Disabled"
             },
             "previewLimit": 50,
-            "server": "172.18.0.2",
-            "port": 3306,
-            "driver": "MariaDB",
-            "name": "rootmariadb",
-            "database": "mysql",
-            "username": "root",
-            "password": "grilo007"
-        },
-        {
-            "mysqlOptions": {
-                "authProtocol": "default",
-                "enableSsl": "Disabled"
-            },
-            "previewLimit": 50,
             "server": "localhost",
             "port": 3306,
             "driver": "MariaDB",
@@ -61,6 +47,21 @@
             "database": "ordersystem",
             "username": "ordersystem",
             "password": "ordersystem"
+        },
+        {
+            "mysqlOptions": {
+                "authProtocol": "default",
+                "enableSsl": "Disabled"
+            },
+            "previewLimit": 50,
+            "server": "172.18.0.2",
+            "port": 3306,
+            "driver": "MariaDB",
+            "name": "rootmariadb",
+            "database": "mysql",
+            "username": "root",
+            "password": "root"
         }
-    ]
+    ],
+    "makefile.configureOnOpen": false
 }

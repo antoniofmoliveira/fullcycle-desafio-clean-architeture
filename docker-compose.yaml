@@ -18,9 +18,9 @@ services:
       - DB_DRIVER=mysql
       - DB_HOST=mariadbca
       - DB_PORT=3306
-      - DB_USER=ordersystem
-      - DB_PASSWORD=ordersystem
-      - DB_NAME=ordersystem
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=mysql
       - WEB_SERVER_PORT=:8080
       - AMQP_PORT=5672
       - AMQP_HOST=rabbitmq
@@ -32,6 +32,7 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
+    command: sh -c "migrate -path=sql/migrations -database 'mysql://root:root@tcp(mariadbca:3306)/mysql' up && /app/main"
 
   mariadb:
     image: mariadb:latest
@@ -39,9 +40,9 @@ services:
     hostname: mariadbca
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: grilo007
-      MYSQL_DATABASE: ordersystem
-      MYSQL_PASSWORD: ordersystem
+      MARIADB_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mysql
+      MYSQL_PASSWORD: root
     ports:
       - 3306:3306
     # volumes:
@@ -53,7 +54,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 5
-    command: command
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmqcleanarch
