@@ -4,26 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/antoniofmoliveira/cleanarch/internal/entity"
 	"github.com/antoniofmoliveira/cleanarch/internal/usecase"
-	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 )
 
 type WebOrderHandler struct {
-	EventDispatcher   events.EventDispatcherInterface
-	OrderRepository   entity.OrderRepositoryInterface
-	OrderCreatedEvent events.EventInterface
+	CreateOrderUseCase usecase.CreateOrderUseCase
 }
 
 func NewWebOrderHandler(
-	EventDispatcher events.EventDispatcherInterface,
-	OrderRepository entity.OrderRepositoryInterface,
-	OrderCreatedEvent events.EventInterface,
+	CreateOrderUseCase usecase.CreateOrderUseCase,
 ) *WebOrderHandler {
 	return &WebOrderHandler{
-		EventDispatcher:   EventDispatcher,
-		OrderRepository:   OrderRepository,
-		OrderCreatedEvent: OrderCreatedEvent,
+		CreateOrderUseCase: CreateOrderUseCase,
 	}
 }
 
@@ -35,8 +27,8 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createOrder := usecase.NewCreateOrderUseCase(h.OrderRepository, h.OrderCreatedEvent, h.EventDispatcher)
-	output, err := createOrder.Execute(dto)
+	output, err := h.CreateOrderUseCase.Execute(dto)
+
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

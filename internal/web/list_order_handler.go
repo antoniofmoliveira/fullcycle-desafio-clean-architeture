@@ -4,33 +4,24 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/antoniofmoliveira/cleanarch/internal/entity"
 	"github.com/antoniofmoliveira/cleanarch/internal/usecase"
-	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 )
 
 type WebListOrderHandler struct {
-	EventDispatcher  events.EventDispatcherInterface
-	OrderRepository  entity.OrderRepositoryInterface
-	OrderListedEvent events.EventInterface
+	ListOrderUseCase usecase.ListOrderUseCase
 }
 
 func NewWebListOrderHandler(
-	EventDispatcher events.EventDispatcherInterface,
-	OrderRepository entity.OrderRepositoryInterface,
-	OrderListedEvent events.EventInterface,
+	ListOrderUseCase usecase.ListOrderUseCase,
 ) *WebListOrderHandler {
 	return &WebListOrderHandler{
-		EventDispatcher:  EventDispatcher,
-		OrderRepository:  OrderRepository,
-		OrderListedEvent: OrderListedEvent,
+		ListOrderUseCase: ListOrderUseCase,
 	}
 }
 
 func (h *WebListOrderHandler) List(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	listOrder := usecase.NewListOrderUseCase(h.OrderRepository, h.OrderListedEvent, h.EventDispatcher)
-	output, err := listOrder.Execute()
+	output, err := h.ListOrderUseCase.Execute()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return

@@ -6,11 +6,11 @@ package main
 import (
 	"database/sql"
 
+	"github.com/antoniofmoliveira/cleanarch/internal/database"
 	"github.com/antoniofmoliveira/cleanarch/internal/entity"
 	"github.com/antoniofmoliveira/cleanarch/internal/event"
-	"github.com/antoniofmoliveira/cleanarch/internal/database"
-	"github.com/antoniofmoliveira/cleanarch/internal/web"
 	"github.com/antoniofmoliveira/cleanarch/internal/usecase"
+	"github.com/antoniofmoliveira/cleanarch/internal/web"
 	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 	"github.com/google/wire"
 )
@@ -53,13 +53,22 @@ func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInt
 	return &usecase.CreateOrderUseCase{}
 }
 
-func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
+// func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
+// 	wire.Build(
+// 		setOrderRepositoryDependency,
+// 		setOrderCreatedEvent,
+// 		web.NewWebOrderHandler,
+// 	)
+// 	return &web.WebOrderHandler{}
+// }
+
+func NewWebOrderHandler(uc usecase.CreateOrderUseCase) *web.WebOrderHandler {
 	wire.Build(
-		setOrderRepositoryDependency,
-		setOrderCreatedEvent,
 		web.NewWebOrderHandler,
 	)
-	return &web.WebOrderHandler{}
+	return &web.WebOrderHandler{
+		CreateOrderUseCase: uc,
+	}
 }
 
 func NewListOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *usecase.ListOrderUseCase {
@@ -71,11 +80,19 @@ func NewListOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInter
 	return &usecase.ListOrderUseCase{}
 }
 
-func NewWebOrderListHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebListOrderHandler {
+//	func NewWebOrderListHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebListOrderHandler {
+//		wire.Build(
+//			setOrderRepositoryDependency,
+//			setOrderListedEvent,
+//			web.NewWebListOrderHandler,
+//		)
+//		return &web.WebListOrderHandler{}
+//	}
+func NewWebOrderListHandler(uc usecase.ListOrderUseCase) *web.WebListOrderHandler {
 	wire.Build(
-		setOrderRepositoryDependency,
-		setOrderListedEvent,
 		web.NewWebListOrderHandler,
 	)
-	return &web.WebListOrderHandler{}
+	return &web.WebListOrderHandler{
+		ListOrderUseCase: uc,
+	}
 }

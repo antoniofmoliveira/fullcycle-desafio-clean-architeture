@@ -20,8 +20,8 @@ import (
 	"github.com/antoniofmoliveira/cleanarch/internal/grpc/pb"
 	"github.com/antoniofmoliveira/cleanarch/internal/grpc/service"
 
-	"github.com/antoniofmoliveira/cleanarch/internal/web/webserver"
 	"github.com/antoniofmoliveira/cleanarch/internal/inject"
+	"github.com/antoniofmoliveira/cleanarch/internal/web/webserver"
 	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/streadway/amqp"
@@ -56,22 +56,22 @@ func main() {
 
 	// RabbitMQ end
 
+	createOrderUseCase := inject.NewCreateOrderUseCase(db, eventDispatcher)
+	listOrderUseCase := inject.NewListOrderUseCase(db, eventDispatcher)
+
 	// webserver start
 
 	webserver := webserver.NewWebServer(configs.WebServerPort)
-	webOrderHandler := inject.NewWebOrderHandler(db, eventDispatcher)
+	webOrderHandler := inject.NewWebOrderHandler(*createOrderUseCase)
 	webserver.AddHandler("/order", webOrderHandler.Create)
 
-	webOrderListHandler := inject.NewWebOrderListHandler(db, eventDispatcher)
+	webOrderListHandler := inject.NewWebOrderListHandler(*listOrderUseCase)
 	webserver.AddHandler("/orders", webOrderListHandler.List)
 
 	fmt.Println("Starting web server on port", configs.WebServerPort)
 	go webserver.Start()
 
 	// webserver end
-
-	createOrderUseCase := inject.NewCreateOrderUseCase(db, eventDispatcher)
-	listOrderUseCase := inject.NewListOrderUseCase(db, eventDispatcher)
 
 	// grpc server start
 

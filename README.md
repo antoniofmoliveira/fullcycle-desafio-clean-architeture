@@ -316,3 +316,32 @@ Connection: close
 ]
 ```
 
+## TODO
+
+- implementar autenticação e autorização
+
+    - receber credentials e retornar token
+
+    - receber token junto com solicitação
+
+- adicionar autenticacao no web server, no graphql server e no grpc server
+
+- adicionar passo autorizacao nos usecase ou um usecase separado?
+
+- usecases especificos para autenticação, registro de usuário, autorização de usuário a usecase
+
+- tabelas usuários, usecases, autorizacao 
+
+- adicionar entidades e dtos
+
+- passar id ou token do usuário aos usecases junto com inputdto? 
+
+- funções utilitárias para hash, comparação, geração token, extração de usuário do token
+
+- consultas sql
+
+- no web server obter credenciais ou token dos headers do request
+
+- no graphql server encapsular o handlers para extrair as credenciais ou token? https://gqlgen.com/recipes/authentication/
+
+- grpc server obter credencials ou token via alts? teria que usar conexao read/write? https://grpc.io/docs/languages/go/alts/

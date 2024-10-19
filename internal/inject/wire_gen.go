@@ -8,11 +8,11 @@ package inject
 
 import (
 	"database/sql"
+	"github.com/antoniofmoliveira/cleanarch/internal/database"
 	"github.com/antoniofmoliveira/cleanarch/internal/entity"
 	"github.com/antoniofmoliveira/cleanarch/internal/event"
-	"github.com/antoniofmoliveira/cleanarch/internal/database"
-	"github.com/antoniofmoliveira/cleanarch/internal/web"
 	"github.com/antoniofmoliveira/cleanarch/internal/usecase"
+	"github.com/antoniofmoliveira/cleanarch/internal/web"
 	"github.com/antoniofmoliveira/cleanarch/pkg/events"
 	"github.com/google/wire"
 )
@@ -26,10 +26,8 @@ func NewCreateOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInt
 	return createOrderUseCase
 }
 
-func NewWebOrderHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebOrderHandler {
-	orderRepository := database.NewOrderRepository(db)
-	orderCreated := event.NewOrderCreated()
-	webOrderHandler := web.NewWebOrderHandler(eventDispatcher, orderRepository, orderCreated)
+func NewWebOrderHandler(uc usecase.CreateOrderUseCase) *web.WebOrderHandler {
+	webOrderHandler := web.NewWebOrderHandler(uc)
 	return webOrderHandler
 }
 
@@ -40,10 +38,16 @@ func NewListOrderUseCase(db *sql.DB, eventDispatcher events.EventDispatcherInter
 	return listOrderUseCase
 }
 
-func NewWebOrderListHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebListOrderHandler {
-	orderRepository := database.NewOrderRepository(db)
-	orderListed := event.NewOrderListed()
-	webListOrderHandler := web.NewWebListOrderHandler(eventDispatcher, orderRepository, orderListed)
+//	func NewWebOrderListHandler(db *sql.DB, eventDispatcher events.EventDispatcherInterface) *web.WebListOrderHandler {
+//		wire.Build(
+//			setOrderRepositoryDependency,
+//			setOrderListedEvent,
+//			web.NewWebListOrderHandler,
+//		)
+//		return &web.WebListOrderHandler{}
+//	}
+func NewWebOrderListHandler(uc usecase.ListOrderUseCase) *web.WebListOrderHandler {
+	webListOrderHandler := web.NewWebListOrderHandler(uc)
 	return webListOrderHandler
 }
 
@@ -52,6 +56,8 @@ func NewWebOrderListHandler(db *sql.DB, eventDispatcher events.EventDispatcherIn
 var setOrderRepositoryDependency = wire.NewSet(database.NewOrderRepository, wire.Bind(new(entity.OrderRepositoryInterface), new(*database.OrderRepository)))
 
 var setEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewOrderCreated, wire.Bind(new(events.EventInterface), new(*event.OrderCreated)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
+
+var setOtherEventDispatcherDependency = wire.NewSet(events.NewEventDispatcher, event.NewOrderListed, wire.Bind(new(events.EventInterface), new(*event.OrderListed)), wire.Bind(new(events.EventDispatcherInterface), new(*events.EventDispatcher)))
 
 var setOrderCreatedEvent = wire.NewSet(event.NewOrderCreated, wire.Bind(new(events.EventInterface), new(*event.OrderCreated)))
 
