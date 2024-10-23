@@ -14,6 +14,8 @@ services:
       - cleanarchnet
     ports:
       - 8080:8080
+      - 50051:50051
+      - 8081:8081
     environment:
       - DB_DRIVER=mysql
       - DB_HOST=mariadbca
@@ -77,3 +79,13 @@ services:
 networks:
   cleanarchnet:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.50.0.0/16
+          ip_range: 172.50.0.0/24
+          gateway: 172.50.0.1
+          aux_addresses:
+            mariadbca: 172.50.0.3
+            rabbitmq: 172.50.0.2
+            cleanarch: 172.50.0.4
