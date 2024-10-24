@@ -2,8 +2,8 @@
 
 Olá devs!
 
-Agora é a hora de botar a mão na massa. Para este desafio, você precisará criar o usecase de listagem das orders.
-Esta listagem precisa ser feita com:
+Agora é a hora de botar a mão na massa. Para este desafio, você precisará criar
+o usecase de listagem das orders. Esta listagem precisa ser feita com:
 
 - Endpoint REST (GET /order)
 
@@ -11,11 +11,15 @@ Esta listagem precisa ser feita com:
 
 - Query ListOrders GraphQL
 
-Não esqueça de criar as migrações necessárias e o arquivo api.http com a request para criar e listar as orders.
+Não esqueça de criar as migrações necessárias e o arquivo api.http com a request
+para criar e listar as orders.
 
-Para a criação do banco de dados, utilize o Docker (Dockerfile / docker-compose.yaml), com isso ao rodar o comando docker compose up tudo deverá subir, preparando o banco de dados.
+Para a criação do banco de dados, utilize o Docker (Dockerfile /
+docker-compose.yaml), com isso ao rodar o comando docker compose up tudo deverá
+subir, preparando o banco de dados.
 
-Inclua um README.md com os passos a serem executados no desafio e a porta em que a aplicação deverá responder em cada serviço.
+Inclua um README.md com os passos a serem executados no desafio e a porta em que
+a aplicação deverá responder em cada serviço.
 
 ## Solução
 
@@ -23,17 +27,26 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - mariadb:latest
 
-    - o sistem está utilizando o database `mysql` com user `root` e senha `root`.
+  - o sistem está utilizando o database `mysql` com user `root` e senha `root`.
 
-    - em `sql/create-database-and-user.sql`  está a sequencia de sql para criar database, user e grant all no database para o user criado. lembre de atualizar as variáveis em `.env`, `.env_container` e `docker-compose.yml`. no `docker-compose.yml` atualize também user e senha na linha `command: sh ...`.
+  - em `sql/create-database-and-user.sql` está a sequencia de sql para criar
+    database, user e grant all no database para o user criado. lembre de
+    atualizar as variáveis em `.env`, `.env_container` e `docker-compose.yml`.
+    no `docker-compose.yml` atualize também user e senha na linha
+    `command: sh ...`.
 
-    - o `docker-compose.yml` sempre tentará rodar o` migrations up` antes de executar o systema. após a primeira execução a linha com `command: sh ...` pode ser excluída ou comentada.
+  - o `docker-compose.yml` sempre tentará rodar o`migrations up` antes de
+    executar o systema. após a primeira execução a linha com `command: sh ...`
+    pode ser excluída ou comentada.
 
-    - o Makefile tem comandos para inicializar o migrations, executar o up e o down, e para ressetar a dirty flag do banco de dados no caso de acontecer interrupção da migração. só tem que atualizar a senha do root e o database para acesso ao banco de dados.
+  - o Makefile tem comandos para inicializar o migrations, executar o up e o
+    down, e para ressetar a dirty flag do banco de dados no caso de acontecer
+    interrupção da migração. só tem que atualizar a senha do root e o database
+    para acesso ao banco de dados.
 
 - rabbitmq:4-management-alpine
 
-    - demora uns 3 segundos para iniciar.  veja detalhes na seção docker abaixo.
+  - demora uns 3 segundos para iniciar. veja detalhes na seção docker abaixo.
 
 ### alterar /internal/entity
 
@@ -71,7 +84,8 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - adicionar handler ao webserver em /cmd/ordersystem/main.go ✔
 
-- foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o package para inject wm virtude de conflito no namespace main
+- foi necessário mover wire_gen.go para /internal/inject/wire_gen.go e mudar o
+  package para inject wm virtude de conflito no namespace main
 
 ### alterar /api
 
@@ -79,13 +93,13 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 ### alterar /internal/graph (seguir https://gqlgen.com/getting-started/)
 
-- executar go run github.com/99designs/gqlgen init  ✔
+- executar go run github.com/99designs/gqlgen init ✔
 
 - alterar schema.graphqls para adicionar query ✔
 
 - executar go run github.com/99designs/gqlgen generate ✔
 
-- adicionar resolver a schema.resolvers.go  ✔
+- adicionar resolver a schema.resolvers.go ✔
 
 - implementar Orders em resolver.go ✔
 
@@ -103,9 +117,10 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - go install google.golang.org/protobuf/cmd/protoc-gen-go@latest ✔
 
-- usar protoc para gerar arquivos em ./pb  ✔
+- usar protoc para gerar arquivos em ./pb ✔
 
-- protoc --go-grpc_out --go_out=pb --go_opt=paths=source_relative protofiles/order.proto  ✔
+- protoc --go-grpc_out --go_out=pb --go_opt=paths=source_relative
+  protofiles/order.proto ✔
 
 - criar ListOrdersService em /service ✔
 
@@ -113,10 +128,10 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - testar: ✔
 
-    - grpcurl -plaintext -d '{"id": "1", "price": 100, "tax": 10}' localhost:50051 pb.OrderService/CreateOrder
+  - grpcurl -plaintext -d '{"id": "1", "price": 100, "tax": 10}' localhost:50051
+    pb.OrderService/CreateOrder
 
-    - grpcurl -plaintext localhost:50051 pb.ListOrderService/ListOrders
-
+  - grpcurl -plaintext localhost:50051 pb.ListOrderService/ListOrders
 
 ### implementar docker composer
 
@@ -124,7 +139,7 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - criar a network que vai connectar o docker compose ✔
 
-- docker compose -f "docker-compose.yaml" up -d --build  ✔
+- docker compose -f "docker-compose.yaml" up -d --build ✔
 
 - atentar para as variáveis de ambiente para rodar local ✔
 
@@ -134,15 +149,23 @@ Inclua um README.md com os passos a serem executados no desafio e a porta em que
 
 - atentar para as variaveis de ambiente para rodar no docker compose ✔
 
-  - DB_HOST=mariadbca - tem que ser o hostname colocado no service do docker compose
+  - DB_HOST=mariadbca - tem que ser o hostname colocado no service do docker
+    compose
 
-  - AMQP_HOST=rabbitmq - tem que ser o hostname colocado no service do docker compose
+  - AMQP_HOST=rabbitmq - tem que ser o hostname colocado no service do docker
+    compose
 
-- assim `.env_container` contém as variáveis de ambiente para rodar em container e `.env` contém as necessárias para executar localmente. a linha `COPY .env_container .env` no `dockerfile` copia o `.env_container` para `.env`, automatizando o processoa ao construir o container.
+- assim `.env_container` contém as variáveis de ambiente para rodar em container
+  e `.env` contém as necessárias para executar localmente. a linha
+  `COPY .env_container .env` no `dockerfile` copia o `.env_container` para
+  `.env`, automatizando o processoa ao construir o container.
 
-- **IMPORTANTE**: após a carga do container o rabbitmq demora cerca de 3 segundos para iniciar em minha máquina, impedindo o aplicativo de se conectar ao rabbimq causando panic.
-isso se traduz na necessidade de adicionar no `docker-compose.yml` um healthcheck no service do rabbitmq e uma condition no depends_on do app.
-um adicional healthcheck foi adicionado ao service do mariadb só por garantia.
+- **IMPORTANTE**: após a carga do container o rabbitmq demora cerca de 3
+  segundos para iniciar em minha máquina, impedindo o aplicativo de se conectar
+  ao rabbimq causando panic. isso se traduz na necessidade de adicionar no
+  `docker-compose.yml` um healthcheck no service do rabbitmq e uma condition no
+  depends_on do app. um adicional healthcheck foi adicionado ao service do
+  mariadb só por garantia.
 
 ### executando servidor e log de mensagens
 
@@ -237,37 +260,39 @@ antonio@DG15:~/DEV/go2/clean-arch$ grpcurl -plaintext localhost:50051 pb.ListOrd
   id,Price, Tax, FinalPrice
 }}
 ```
+
 ### saída graphql
+
 ```json
 {
-  "data": {
-    "orders": [
-      {
-        "id": "1",
-        "Price": 100,
-        "Tax": 10,
-        "FinalPrice": 110
-      },
-      {
-        "id": "a",
-        "Price": 100.5,
-        "Tax": 0.5,
-        "FinalPrice": 101
-      },
-      {
-        "id": "b",
-        "Price": 100.5,
-        "Tax": 0.5,
-        "FinalPrice": 101
-      },
-      {
-        "id": "c",
-        "Price": 100.5,
-        "Tax": 0.5,
-        "FinalPrice": 101
-      }
-    ]
-  }
+    "data": {
+        "orders": [
+            {
+                "id": "1",
+                "Price": 100,
+                "Tax": 10,
+                "FinalPrice": 110
+            },
+            {
+                "id": "a",
+                "Price": 100.5,
+                "Tax": 0.5,
+                "FinalPrice": 101
+            },
+            {
+                "id": "b",
+                "Price": 100.5,
+                "Tax": 0.5,
+                "FinalPrice": 101
+            },
+            {
+                "id": "c",
+                "Price": 100.5,
+                "Tax": 0.5,
+                "FinalPrice": 101
+            }
+        ]
+    }
 }
 ```
 
@@ -315,33 +340,3 @@ Connection: close
   }
 ]
 ```
-
-## TODO
-
-- implementar autenticação e autorização
-
-    - receber credentials e retornar token
-
-    - receber token junto com solicitação
-
-- adicionar autenticacao no web server, no graphql server e no grpc server
-
-- adicionar passo autorizacao nos usecase ou um usecase separado?
-
-- usecases especificos para autenticação, registro de usuário, autorização de usuário a usecase
-
-- tabelas usuários, usecases, autorizacao 
-
-- adicionar entidades e dtos
-
-- passar id ou token do usuário aos usecases junto com inputdto? 
-
-- funções utilitárias para hash, comparação, geração token, extração de usuário do token
-
-- consultas sql
-
-- no web server obter credenciais ou token dos headers do request
-
-- no graphql server encapsular o handlers para extrair as credenciais ou token? https://gqlgen.com/recipes/authentication/
-
-- grpc server obter credencials ou token via alts? teria que usar conexao read/write? https://grpc.io/docs/languages/go/alts/
